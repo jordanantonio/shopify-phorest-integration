@@ -1,5 +1,6 @@
 import express, { type Request } from "express";
 import { webhookRouter } from "./routes/webhooks.js";
+import { logger } from "./utils/logger.js";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -22,5 +23,5 @@ app.use("/webhooks", webhookRouter);
 
 // Start the server
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  logger.info(`Server running on port ${PORT}`);
 });
