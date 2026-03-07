@@ -1,10 +1,17 @@
-import express from "express";
+import express, { type Request } from "express";
+import { verifyShopifyWebhook } from "./webhooks/verifyShopify.js";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Parse JSON request bodies
-app.use(express.json());
+app.use(
+  express.json({
+    verify: (req, _res, buf) => {
+      (req as Request & { rawBody?: Buffer }).rawBody = Buffer.from(buf);
+    },
+  }),
+);
 
 // Health check route
 app.get("/", (_req, res) => {
@@ -12,8 +19,8 @@ app.get("/", (_req, res) => {
 });
 
 // Shopify webhook endpoint
-app.post("/webhook/shopify/order-paid", (req, res) => {
-  console.log("Shopify webhook received:");
+app.post("/webhook/shopify/order-paid", verifyShopifyWebhook, (req, res) => {
+  console.log("Verified Shopify webhook received:");
   console.log(req.body);
 
   res.status(200).json({ received: true });
