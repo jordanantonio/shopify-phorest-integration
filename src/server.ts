@@ -1,5 +1,5 @@
 import express, { type Request } from "express";
-import { verifyShopifyWebhook } from "./webhooks/verifyShopify.js";
+import { webhookRouter } from "./routes/webhooks.js";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -18,13 +18,7 @@ app.get("/", (_req, res) => {
   res.send("Shopify Phorest Loyalty Sync running");
 });
 
-// Shopify webhook endpoint
-app.post("/webhook/shopify/order-paid", verifyShopifyWebhook, (req, res) => {
-  console.log("Verified Shopify webhook received:");
-  console.log(req.body);
-
-  res.status(200).json({ received: true });
-});
+app.use("/webhooks", webhookRouter);
 
 // Start the server
 app.listen(PORT, () => {
